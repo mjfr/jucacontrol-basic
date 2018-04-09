@@ -7,6 +7,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.springframework.util.DigestUtils;
 
@@ -19,18 +22,28 @@ public class Usuario {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotNull
 	private TiposUsuario tipo = TiposUsuario.COMUM;
 	
-	@Column(length = 30, nullable = false, unique = false)
+	@Column(length = 30, nullable = false, unique = false) // Para o banco
+	@Size(min = 1, max = 30) // Para validação
+	@NotNull // Para validação
 	private String nome;
 	
 	@Column(length = 50, nullable = false, unique = false)
+	@NotNull
+	@Size(min = 1, max = 50)
 	private String sobrenome;
 	
 	@Column(length = 120, nullable = false, unique = true)
+	@NotNull
+	@Email // Deve ser um e-mail válido
+	@Size(min = 1, max = 120)
 	private String email;
 	
 	@Column(length = 64, nullable = false, unique = false)
+	@NotNull
+	@Size(min = 5, max = 64)
 	private String senha;
 	
 	@Transient
@@ -95,4 +108,9 @@ public class Usuario {
 	public void setCaminhoFoto(String caminhoFoto) {
 		this.caminhoFoto = caminhoFoto;
 	}
+	
+	public boolean getAdministrador() {
+		return this.tipo.equals(TiposUsuario.ADMINISTRADOR);
+	}
 }
+

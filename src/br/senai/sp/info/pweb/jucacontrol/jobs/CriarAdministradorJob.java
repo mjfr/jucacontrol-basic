@@ -28,8 +28,14 @@ public class CriarAdministradorJob implements ApplicationListener<ContextRefresh
 		admin.setTipo(TiposUsuario.ADMINISTRADOR);
 		admin.hashearSenha();
 		
-		System.out.println("[JOB] - Criando usuário administrador...");
-		usuarioDAO.persistir(admin);
+		System.out.println("[JOB] - Verificando existência no usuário administrador...");
+		if (usuarioDAO.buscarPorEmail(admin.getEmail()) == null) {
+			System.out.println("[JOB] - Criando usuário administrador...");
+			usuarioDAO.persistir(admin);			
+		}else {
+			System.out.println("[JOB] - Administrador existente");
+		}
+		
 		System.out.println("[JOB] - Usuário administrador pronto para uso");
 	}
 

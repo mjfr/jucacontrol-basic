@@ -16,4 +16,6 @@ public interface UsuarioDAO {
 	
 	public void persistir(Usuario obj);
 	
+	public Usuario buscarPorEmail(String email);
+	
 }
