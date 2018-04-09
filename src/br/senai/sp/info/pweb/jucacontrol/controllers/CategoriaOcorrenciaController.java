@@ -25,8 +25,12 @@ public class CategoriaOcorrenciaController {
 	@GetMapping("/categoria")
 	public String abrirMenuCategorias(@RequestParam(name = "id", required = false) Long id,
 										Model model) {
+		if(id != null) {
+			model.addAttribute("categoriaOcorrencia", categoriaOcorrenciaDAO.buscar(id));
+		}else {
+			model.addAttribute("categoriaOcorrencia", new CategoriaOcorrencia());
+		}
 //		CategoriaOcorrencia categoriaBuscada = categoriaOcorrenciaDAO.buscar(id);
-//		model.addAttribute("categoriaOcorrencia", new CategoriaOcorrencia());
 		model.addAttribute("categorias", categoriaOcorrenciaDAO.buscarTodas());
 		return "categoria/menu";
 	}
