@@ -3,6 +3,7 @@ package br.senai.sp.info.pweb.jucacontrol.controllers;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class UsuarioController {
 	
 	@GetMapping(value = {"/", ""})
 	public String abrirLogin(Model model) {
-		
+		model.addAttribute("usuario", new Usuario());
 		return "index";
 	}
 	
@@ -65,7 +66,7 @@ public class UsuarioController {
 	
 	@GetMapping("/app/adm/usuario/deletar")
 	public String deletar(@RequestParam(required = true) Long id, HttpServletResponse response) throws IOException {
-		
+		usuarioDAO.deletar(usuarioDAO.buscar(id));
 		return "redirect:/app/adm/usuario";
 	}
 	
@@ -131,13 +132,31 @@ public class UsuarioController {
 	//@Valid - DEtermina que o Spring deve validar o objeto
 	//BindingResult - Armazena os possíveis erros de validação que ocorreram no objeto. É uma regra estar a direita e logo após do @Valid
 	//Essa parte de validação tem relação com as validações do modelo devido as anotações e.g: @NotNull e @Size
-	public String autenticar(@Valid Usuario usuario, BindingResult brUsuario) {
+	public String autenticar(@Valid Usuario usuario, BindingResult brUsuario, HttpSession sessao) {
+		
+		// Explicação de HttpSession(1) e SessionFactory(2)
+		// (1) guarda dados em uma sessão (arquivo que fica no servidor, armazenamento de forma rápida), é tipo um mini banco de dados para web. TECNICAMENTE é algo simples que guarda poucas informações, ex: login e senha
+		// (2) gera uma sessão com o banco de dados. é um objeto que o hibernate usa
 
 		if (brUsuario.hasFieldErrors("email") || brUsuario.hasFieldErrors("senha")) {
 			System.out.println("Capturou os erros");
 			System.out.println("-------------------");
 			return "index";
 		}
+		
+		// Verificando se o usuário existe, antes de buscar email e senha, devemos hashear a senha do usuário para o login
+		usuario.hashearSenha();
+		Usuario usuarioAutenticado = usuarioDAO.buscarPorEmailESenha(usuario.getEmail(), usuario.getSenha());
+		
+		// Verificando se o usuário não existe
+		if (usuarioAutenticado == null) {
+			brUsuario.addError(new FieldError("usuario", "email", "E-mail ou senha inválidos"));
+			return "index";
+		}
+		
+		// Aplica o usuário autenticado na sessão
+		sessao.setAttribute("usuarioAutenticado", usuarioAutenticado); // No caso para o (1) ele criaria um objeto e colocaria dentro de um arquivo do servidor (arquivo cheio de bytes)
+		// No mercado de trabalho é muito comum guardar o menor número de informações possível, e.g: o Felipe usa uma nova classe só para guardar os ids e apenas o ID é armazenado na sessão
 		
 		return "redirect:/app/";
 	}

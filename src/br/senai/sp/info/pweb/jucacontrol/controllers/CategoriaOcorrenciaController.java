@@ -37,13 +37,13 @@ public class CategoriaOcorrenciaController {
 
 	@GetMapping("/categoria/deletar")
 	public String deletar(@RequestParam(name = "id", required = true) Long id) {
-		
+		categoriaOcorrenciaDAO.deletar(categoriaOcorrenciaDAO.buscar(id));
 		return "redirect:/app/adm/categoria";
 	}
 	
 	
 	@PostMapping("/categoria/salvar")
-	public String salvar(@Valid CategoriaOcorrencia categoriaOcorrencia, BindingResult brCategoria) {
+	public String salvar(@Valid CategoriaOcorrencia categoriaOcorrencia, BindingResult brCategoria, Model model) {
 		
 		if (categoriaOcorrenciaDAO.buscarPorNome(categoriaOcorrencia.getNome()) != null) {
 			brCategoria.addError(new FieldError("categoriaOcorrencia", "nome", "A categoria '" + categoriaOcorrencia.getNome() + "' já existe" ));
@@ -53,6 +53,7 @@ public class CategoriaOcorrenciaController {
 		if (brCategoria.hasErrors()) {
 			System.out.println(brCategoria);
 			System.out.println("-_-_-_-_-_-_-_-_-_-_-");
+			model.addAttribute("categorias", categoriaOcorrenciaDAO.buscarTodas());
 //			model.addAttribute("categoriaOcorrencia", categoriaOcorrencia);
 			// Não precisa do model pois o Spring já pegou o nome "categoriaOcorrencia" e o colocou direto no "modelAttribute" do "menu.jsp"
 			return "categoria/menu";
@@ -60,10 +61,9 @@ public class CategoriaOcorrenciaController {
 		
 		if (categoriaOcorrencia.getId() == null) {
 			categoriaOcorrenciaDAO.persistir(categoriaOcorrencia);
-		} else {
-			categoriaOcorrenciaDAO.alterar(categoriaOcorrencia);
 		}
-		
+			categoriaOcorrenciaDAO.alterar(categoriaOcorrencia);
+				
 		//Redireciona para pagina de categorias
 		return "redirect:/app/adm/categoria";
 	}

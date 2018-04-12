@@ -23,11 +23,11 @@
 			<div class="row">
 				<div class="col flex-1">
 					<c:choose>
-						<c:when test="${empty categoria.id}">
+						<c:when test="${empty categoriaOcorrencia.id}">
 							<h2>Nova Categoria</h2>
 						</c:when>
 						<c:otherwise>
-							<h2>Editando categoria: ${categoria.nome}</h2>
+							<h2>Editando categoria: ${categoriaOcorrencia.nome}</h2>
 						</c:otherwise>
 					</c:choose>
 					<form:form modelAttribute="categoriaOcorrencia" action="${urlSalvarCategoria}" method="post">
@@ -52,7 +52,7 @@
 										<a class="btn" href="${urlCategorias}">NOVO</a>
 									</div>
 									<div class="col">
-										<a class="btn btn-red" href="${urlDeletarCategoria}?id=${categoria.id}">DELETAR</a>
+										<a class="btn btn-red" href="${urlDeletarCategoria}?id=${categoriaOcorrencia.id}">DELETAR</a>
 									</div>			
 								</c:if>
 							</div>

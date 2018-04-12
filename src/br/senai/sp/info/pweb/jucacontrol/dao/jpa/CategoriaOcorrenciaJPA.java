@@ -41,7 +41,7 @@ public class CategoriaOcorrenciaJPA implements CategoriaOcorrenciaDAO{
 
 	@Override
 	public List<CategoriaOcorrencia> buscarTodas() {
-		String hql = "FROM CategoriaOcorrencia c";
+		String hql = "FROM CategoriaOcorrencia";
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		return query.list();
 	}

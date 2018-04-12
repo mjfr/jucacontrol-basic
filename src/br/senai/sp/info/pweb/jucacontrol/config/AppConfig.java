@@ -9,11 +9,14 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+
+import br.senai.sp.info.pweb.jucacontrol.interceptor.AutenticacaoInterceptor;
 
 @Configuration
 @Import(value = PersistenceConfig.class)
@@ -51,4 +54,15 @@ public class AppConfig implements WebMvcConfigurer{
 		
 		return messageSource;
 	}
+	
+	@Bean
+	public AutenticacaoInterceptor getAutenticacaoInterceptor() {
+		return new AutenticacaoInterceptor();
+	}
+	
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(getAutenticacaoInterceptor()).addPathPatterns("/**");
+	}
+	
 }

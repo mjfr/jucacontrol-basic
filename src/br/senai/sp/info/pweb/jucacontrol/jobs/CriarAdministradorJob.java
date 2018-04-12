@@ -21,7 +21,7 @@ public class CriarAdministradorJob implements ApplicationListener<ContextRefresh
 		System.out.println("[JOB] - Criação de Administrador");
 		// Criando objeto do usuário administrador padrão
 		Usuario admin = new Usuario();
-		admin.setEmail("admni@email.com");
+		admin.setEmail("admin@email.com");
 		admin.setNome("Administrador");
 		admin.setSenha("admin");
 		admin.setSobrenome("do Sistema");

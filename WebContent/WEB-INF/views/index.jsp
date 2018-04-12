@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <c:url value="/" var="raiz" />
 <c:url value="/usuario/autenticar" var="urlAutenticarUsuario" />
@@ -54,17 +55,17 @@
 			<img alt="juca control logo" src="${raiz}assets/images/jucacontrol_logo.png">
 		</div>
 		<div>
-			<form action="${urlAutenticarUsuario}" method="post" style="color: white">
+			<form:form modelAttribute="usuario" action="${urlAutenticarUsuario}" method="post" style="color: white">
 				<label>
 					E-mail
-					<input name="email" type="email" required="required" maxlength="120" id="inputEmail" cssStyle="color: white;"/>
+					<form:input path="email" type="email" required="required" maxlength="120" id="inputEmail" cssStyle="color: white;"/>
 				</label>
 				<label>
 					Senha
-					<input name="senha" type="password" required="required" maxlength="20" cssStyle="color: white;" />
+					<form:password path="senha" required="required" maxlength="20" cssStyle="color: white;" />
 				</label>
 				<button class="btn" type="submit">ENTRAR</button>
-			</form>
+			</form:form>
 		</div>	
 	</div>
 </body>
