@@ -59,6 +59,7 @@
 				<label>
 					E-mail
 					<form:input path="email" type="email" required="required" maxlength="120" id="inputEmail" cssStyle="color: white;"/>
+					<form:errors path="email"/>
 				</label>
 				<label>
 					Senha

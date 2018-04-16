@@ -26,7 +26,13 @@ public class UsuarioController {
 	private UsuarioDAO usuarioDAO;
 	
 	@GetMapping(value = {"/", ""})
-	public String abrirLogin(Model model) {
+	public String abrirLogin(Model model, HttpSession session) {
+		
+		// Caso o usuário já esteja logado, redireciona-o para o /app
+		if (session.getAttribute("usuarioAutenticado") != null) {
+			return "redirect:/app";
+		}
+		
 		model.addAttribute("usuario", new Usuario());
 		return "index";
 	}
@@ -140,7 +146,7 @@ public class UsuarioController {
 
 		if (brUsuario.hasFieldErrors("email") || brUsuario.hasFieldErrors("senha")) {
 			System.out.println("Capturou os erros");
-			System.out.println("-------------------");
+			System.out.println("-_-_-_-_-_-_-_-_-_-");
 			return "index";
 		}
 		
@@ -154,7 +160,7 @@ public class UsuarioController {
 			return "index";
 		}
 		
-		// Aplica o usuário autenticado na sessão
+		// Aplica o usuário autenticado na sessão (arquivo que salva os dados do usuário logado no servidor)
 		sessao.setAttribute("usuarioAutenticado", usuarioAutenticado); // No caso para o (1) ele criaria um objeto e colocaria dentro de um arquivo do servidor (arquivo cheio de bytes)
 		// No mercado de trabalho é muito comum guardar o menor número de informações possível, e.g: o Felipe usa uma nova classe só para guardar os ids e apenas o ID é armazenado na sessão
 		
@@ -162,8 +168,8 @@ public class UsuarioController {
 	}
 	
 	@GetMapping({"/sair"})
-	public String logout() {
-		
+	public String logout(HttpSession session) {
+		session.invalidate();
 		return "redirect:/";
 	}
 
