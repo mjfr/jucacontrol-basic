@@ -17,7 +17,7 @@ public class OcorrenciaJPA implements OcorrenciaDAO{
 
 	@Autowired
 	private SessionFactory sessionFactory;
-	
+
 	@Override
 	public void persistir(Ocorrencia obj) {
 		sessionFactory.getCurrentSession().persist(obj);
@@ -54,8 +54,6 @@ public class OcorrenciaJPA implements OcorrenciaDAO{
 	@Override
 	public void alterar(Ocorrencia obj) {
 		sessionFactory.getCurrentSession().update(obj);
+		
 	}
-	
-	
-
 }

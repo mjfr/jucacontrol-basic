@@ -23,20 +23,20 @@
 			<form:hidden path="id"/>
 			<div class="row">
 				<div class="col flex-1">
-					<input type="text" name="titulo" placeholder="Insira o título da ocorrência"/>	
+					<form:input path="titulo" type="text" placeholder="Insira o título da ocorrência"/>	
 				</div>
 			</div>
 			<div class="row">
 				<div class="col flex-1">
-					<textarea name="descricao"></textarea>
+					<form:textarea path="descricao"/>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col flex-1">
-					<select name="categoria.id">
+					<%-- <select name="categoria.id"> --%>
 						<%--OPTIONS AQUI --%>
-
-					</select>
+					<form:select path="categoria.id" items="${categorias}" itemLabel="nome" itemValue="id"/>
+					<%-- </select> --%>
 				</div>
 			</div>
 			<div class="row btn-group">

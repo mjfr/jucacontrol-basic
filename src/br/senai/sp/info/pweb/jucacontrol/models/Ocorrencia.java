@@ -24,6 +24,7 @@ public class Ocorrencia {
 	
 	@ManyToOne
 	@JoinColumn(nullable = false, name = "categoria_id")
+	@NotNull
 	private CategoriaOcorrencia categoria;
 	
 	@ManyToOne
@@ -40,7 +41,6 @@ public class Ocorrencia {
 	private String titulo;
 	
 	@Column(nullable = false, unique = false)
-	@Size(min = 1)
 	@NotNull
 	@Lob
 	private String descricao;

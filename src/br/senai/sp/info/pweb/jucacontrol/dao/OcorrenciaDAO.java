@@ -4,7 +4,7 @@ import java.util.List;
 
 import br.senai.sp.info.pweb.jucacontrol.models.Ocorrencia;
 
-public interface OcorrenciaDAO {
+public interface OcorrenciaDAO extends DAO<Ocorrencia>{
 
 	public void persistir(Ocorrencia obj);
 	

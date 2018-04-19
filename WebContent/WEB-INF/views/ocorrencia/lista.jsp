@@ -65,7 +65,7 @@
 										${ocorrencia.id}
 									</a>
 								</p>
-								<h4>${ocorrencia.titulo}</h4>
+								<h4><c:out value="${ocorrencia.titulo}" escapeXml="true"/></h4>
 								<p class="ocorrencia-detalhe"><b class="color-pink">Data de abertura: </b>
 									${ocorrencia.dataCadastro}
 								</p>
