@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <c:url value="/" var="raiz" />
 <c:url value="/assets" var="assets" />
 <c:url value="/app" var="urlOcorrencias" />
@@ -9,6 +10,7 @@
 <c:url value="/app/ocorrencia/nova" var="urlNovaOcorrencia" />
 <c:url value="/app/ocorrencia/assumir" var="urlAssumirOcorrencia" />
 <c:url value="/app/ocorrencia/encerrar" var="urlEncerrarOcorrencia" />
+
 
 
 <!DOCTYPE html>
@@ -33,11 +35,13 @@
 			<form action="${urlOcorrencias}" method="get" class="flex-grid ma-b-l" style="max-width: 400px;">
 				<div class="row">
 				<div class="col flex-2">
-					<select name="pesquisa">
+					<%-- <select name="pesquisa">
 						<c:forEach items="${pesquisas}" var="pesquisa">
 							<option value="${pesquisa}">${pesquisa.descricao}</option>
 						</c:forEach>
-					</select>
+					</select> --%>
+					<%-- Quando o form:input não está em um form:form, devemos informar o name manualmente --%>
+					<form:select path="tiposBusca" items="${tiposBusca}" name="pesquisa"/>
 				</div>
 				<div class="col flex-1">
 					<button class="btn btn-blue" type="submit">Pesquisar</button>
@@ -67,37 +71,34 @@
 								</p>
 								<h4><c:out value="${ocorrencia.titulo}" escapeXml="true"/></h4>
 								<p class="ocorrencia-detalhe"><b class="color-pink">Data de abertura: </b>
-									${ocorrencia.dataCadastro}
+								<fmt:formatDate value="${ocorrencia.dataCadastro}" pattern="dd/MM/yyyy kk:mm:ss"/>
+								
 								</p>
 								<p class="ocorrencia-detalhe"><b class="color-pink">Última modificação: </b>
-									${ocorrencia.dataModificacao}
+									<fmt:formatDate value="${ocorrencia.dataModificacao}"  pattern="dd/MM/yyyy kk:mm:ss"/>
 								</p>
 								<p class="ocorrencia-detalhe"><b class="color-pink">Data de conclusão: </b>
-									${ocorrencia.dataConclusao}
+									<fmt:formatDate value="${ocorrencia.dataConclusao}"  pattern="dd/MM/yyyy kk:mm:ss"/>
 								</p>
 							</td>
 							<%--Quem atendeu ocorrencia/link de atendimento--%>
 							<td>
+								<%-- Links de ação - Assumir e encerrar ocorrência --%>
 								<c:choose>
 									<c:when test="${empty ocorrencia.tecnico}">
 										<a href="${urlAssumirOcorrencia}?id=${ocorrencia.id}">Assumir</a>
 									</c:when>
-									<c:otherwise>
-									
-										<img alt="Imagem do técnico" title="Atendida por ${ocorrencia.tecnico.nome} ${ocorrencia.tecnico.sobrenome}"
-										src="${ocorrencia.tecnico.caminhoFoto}">
-										
-										
-										<c:choose>
-											<c:when test="${not empty ocorrencia.dataConclusao}">
-												Encerrado
-											</c:when>
-											<c:when test="${usuarioLogado.tipo eq 'ADMINISTRADOR' or 
-															ocorrencia.tecnico.id eq usuarioLogado.id }">
-												<a href="${urlEncerrarOcorrencia}?id=${ocorrencia.id}">Encerrar</a>
-											</c:when>
-										</c:choose>
-									</c:otherwise>
+									<%-- 
+									1ª - Deve ter sido atendido
+									2ª - A ocorrência não deve ter sido concluída
+									3ª - O emissor da ocorrência deve ser o usuário logado
+									 --%>
+									<c:when
+									 test="${not empty ocorrencia.tecnico
+									 and empty ocorrencia.dataConclusao
+									 and usuarioAutenticado.id eq ocorrencia.emissor.id}">
+									 	<a href="${urlEncerrarOcorrencia}?id=${ocorrencia.id}">Encerrar ocorrência</a>
+									 </c:when>
 								</c:choose>
 							</td>
 						</tr>

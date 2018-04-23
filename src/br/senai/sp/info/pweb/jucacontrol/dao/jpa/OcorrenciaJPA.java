@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.senai.sp.info.pweb.jucacontrol.dao.OcorrenciaDAO;
+import br.senai.sp.info.pweb.jucacontrol.models.BuscarPorSituacaoOcorrencia;
 import br.senai.sp.info.pweb.jucacontrol.models.Ocorrencia;
 
 @Transactional
@@ -55,5 +56,26 @@ public class OcorrenciaJPA implements OcorrenciaDAO{
 	public void alterar(Ocorrencia obj) {
 		sessionFactory.getCurrentSession().update(obj);
 		
+	}
+
+	@Override
+	public List<Ocorrencia> buscarPorSituacao(BuscarPorSituacaoOcorrencia situacao) {
+		String hql = "FROM Ocorrencia o "; // Colocar um final em branco para depois 'grudar' com os filtros
+		
+		// Verificando o filtro que será aplicado no HQL
+		switch (situacao) {
+		case AGUARDANDO:
+			hql += "WHERE o.tecnico IS NULL";
+			break;
+		case EM_ATENDIMENTO:
+			hql += "WHERE o.tecnico IS NOT NULL AND o.dataConclusao IS NULL";
+			break;
+		case ENCERRADOS:
+			hql += "WHERE o.dataConclusao IS NOT NULL";
+			break;
+		}
+		
+		// Executando a query
+		return sessionFactory.getCurrentSession().createQuery(hql).list();
 	}
 }

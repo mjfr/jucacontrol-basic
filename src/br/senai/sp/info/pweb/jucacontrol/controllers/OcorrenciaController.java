@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.senai.sp.info.pweb.jucacontrol.dao.CategoriaOcorrenciaDAO;
 import br.senai.sp.info.pweb.jucacontrol.dao.OcorrenciaDAO;
+import br.senai.sp.info.pweb.jucacontrol.models.BuscarPorSituacaoOcorrencia;
 import br.senai.sp.info.pweb.jucacontrol.models.Ocorrencia;
 import br.senai.sp.info.pweb.jucacontrol.models.Usuario;
 
@@ -32,13 +33,23 @@ public class OcorrenciaController {
 	private OcorrenciaDAO ocorrenciaDAO;
 	
 	@GetMapping({"", "/"})
-	public String abrirListaOcorrencia(@RequestParam(name = "id", required = false) Long id, Model model) {
-		if (id != null) {
-			model.addAttribute("ocorrencia", ocorrenciaDAO.buscar(id));
-		} else {
-			model.addAttribute("ocorrencia", new Ocorrencia());
+	public String abrirListaOcorrencia(/*@RequestParam(name = "id", required = false) Long id,*/ Model model, @RequestParam(name = "pesquisa", required = false) BuscarPorSituacaoOcorrencia situacao) {
+		
+		// Verificando se a situação foi informada
+		if (situacao == null) {
+			situacao = BuscarPorSituacaoOcorrencia.TODOS;
 		}
-		model.addAttribute("ocorrencias", ocorrenciaDAO.buscarTodas());
+		System.out.println(situacao);
+				
+//		if (id != null) {
+//			model.addAttribute("ocorrencia", ocorrenciaDAO.buscar(id));
+//		} else {
+//			model.addAttribute("ocorrencia", new Ocorrencia());
+//		}
+		// if de cima é desnecessário
+		model.addAttribute("tiposBusca", BuscarPorSituacaoOcorrencia.values());
+//		model.addAttribute("ocorrencias", ocorrenciaDAO.buscarTodas());
+		model.addAttribute("ocorrencias", ocorrenciaDAO.buscarPorSituacao(situacao));
 		return "ocorrencia/lista";
 	}
 	
@@ -58,13 +69,29 @@ public class OcorrenciaController {
 	}
 	
 	@GetMapping("/ocorrencia/assumir")
-	public String assumirOcorrencia(@RequestParam(required = true) Long id, RedirectAttributes redirectAttributes) {
+	public String assumirOcorrencia(@RequestParam(required = true) Long id, HttpSession session) {
+		// Pegar a ocorrência para aplicar um técnico
+		Ocorrencia o = ocorrenciaDAO.buscar(id);
 		
+		//Pega o usuário logado
+		Usuario logado = (Usuario) session.getAttribute("usuarioAutenticado");
+		
+		o.setTecnico(logado);
+		o.setDataModificacao(new Date());
+		ocorrenciaDAO.alterar(o);
 		return "redirect:/app";
 	}
 	
 	@GetMapping("/ocorrencia/encerrar")
 	public String concluirOcorrencia(@RequestParam(required = true) Long id, RedirectAttributes redirectAttributes) {
+		// Pegar a ocorrência para aplicar um técnico
+		Ocorrencia o = ocorrenciaDAO.buscar(id);
+		
+		// Alterar as datas de modificação e conclusão
+		o.setDataModificacao(new Date());
+		o.setDataConclusao(new Date());
+		
+		ocorrenciaDAO.alterar(o);		
 		return "redirect:/app";
 	}
 	
