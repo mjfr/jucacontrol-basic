@@ -42,7 +42,7 @@ public class PersistenceConfig {
 		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
 		sessionFactory.setDataSource(getDataSource());
 		sessionFactory.setHibernateProperties(getHibernateProperties());
-		sessionFactory.setPackagesToScan(	"br.senai.sp.info.pweb.jucacontrol.models");
+		sessionFactory.setPackagesToScan("br.senai.sp.info.pweb.jucacontrol.models");
 	 
 		return sessionFactory;
 	}

@@ -1,7 +1,10 @@
 package br.senai.sp.info.pweb.jucacontrol.controllers;
 
+import java.io.File;
 import java.io.IOException;
 
+import javax.mail.MessagingException;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -14,14 +17,17 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import br.senai.sp.info.pweb.jucacontrol.dao.UsuarioDAO;
 import br.senai.sp.info.pweb.jucacontrol.models.TiposUsuario;
 import br.senai.sp.info.pweb.jucacontrol.models.Usuario;
+import br.senai.sp.info.pweb.jucacontrol.utils.EmailUtils;
 
 @Controller
 public class UsuarioController {
 	
+	// O UsuarioDAO é genérico, porém ao injetar ele pega a única implementação que teve que é o UsuarioJPA
 	@Autowired
 	private UsuarioDAO usuarioDAO;
 	
@@ -76,9 +82,16 @@ public class UsuarioController {
 		return "redirect:/app/adm/usuario";
 	}
 	
+	@Autowired
+	private ServletContext context;
+	
 	@PostMapping( value = {"/app/adm/usuario/salvar"})
 	public String salvar(@Valid Usuario usuario, BindingResult brUsuario, @RequestParam(name = "confirmacaoSenha", required = false) String confirmacao,
-			@RequestParam(name = "administrador", required = false) Boolean isAdministrador) { // Para editar, o requerido da confirmação passa a ser false, se não ocorrerá o erro 400
+			@RequestParam(name = "administrador", required = false) Boolean isAdministrador, // Para editar, o requerido da confirmação passa a ser false, se não ocorrerá o erro 400
+			@RequestParam(name = "foto", required = false) MultipartFile arquivo) { 
+		// O servlet context tem um método que pegará o caminho da pasta para armazenar a imagem do servidor
+
+
 		
 		// Verificando se cadastro
 		if (usuario.getId() == null) {
@@ -118,6 +131,14 @@ public class UsuarioController {
 			// Armazena o usuário no banco de dados
 			usuario.hashearSenha();
 			usuarioDAO.persistir(usuario);
+			String titulo = "Você acaba de chamar o Juca";
+			String corpo = "Olá, " + usuario.getNome() + ", você foi cadastrado com sucesso.\n Seja bem vindo ao Jucacontrol.";
+			try {
+				EmailUtils.enviarMensagem(titulo, corpo, usuario.getEmail());
+			} catch (MessagingException e) {
+				
+				e.printStackTrace();
+			}
 		}else {
 			// Buscar o usuári do banco
 			Usuario usuarioBanco = usuarioDAO.buscar(usuario.getId());
@@ -129,6 +150,48 @@ public class UsuarioController {
 			
 			// Altera o usuário
 			usuarioDAO.alterar(usuarioBanco);
+		}
+		
+		MultipartFile arq = arquivo;
+		// Verificando se o arquivo foi enviado
+		if (arquivo != null) {
+			System.out.println("Arquivo enviado");
+			System.out.println("Nome original do arquivo: " + arq.getOriginalFilename());
+			System.out.println("MIME Type: " + arq.getContentType());
+			System.out.println("Tamanho em bytes: " + arq.getSize());
+			
+			try {
+				// O caminho /assets/fotosDePerfil/ a partir do projeto
+				String caminhoPastaFotosDePerfil = context.getRealPath("/assets/fotosDePerfil");
+				
+				// Criando a pasta de fotos de perfil caso ela não exista
+				File pasta = new File(caminhoPastaFotosDePerfil);
+				
+				if (!pasta.exists()) {
+					pasta.mkdirs(); // Cria pasta					
+				}
+				
+				// Define o caminho do arquivo
+				String caminhoArquivo = caminhoPastaFotosDePerfil + "foto_" + usuario.getId();
+				
+				// Criar um objeto File - Classe responsável por gerenciar arquivos e pastas
+				File file = new File(caminhoArquivo);
+				
+				// Cria o arquivo caso ele não exista
+				if (!file.exists()) {
+					file.createNewFile();					
+				}
+				
+				// Transfere os dados dos arquivos upados (Multipart) para um arquivo na máquina (File)
+				arquivo.transferTo(file);
+				
+				// BufferedImage <- classe que manipula as imagens no java
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		}else {
+			System.out.println("Arquivo não enviado");
 		}
 		
 		return "redirect:/app/adm/usuario";

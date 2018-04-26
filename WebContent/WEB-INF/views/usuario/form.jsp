@@ -18,7 +18,7 @@
 	<c:import url="../templates/header.jsp"/>
 	<main class="container read-container">
 		<h1>Cadastro de Usuário</h1>
-		<form:form modelAttribute="usuario" action="${urlSalvarUsuario}" method="post" class="labels-d-block">
+		<form:form modelAttribute="usuario" action="${urlSalvarUsuario}" method="post" class="labels-d-block" enctype="multipart/form-data">
 			<form:hidden path="id"/>
 			<div class="flex-grid">
 				<div class="row">
@@ -61,7 +61,7 @@
 				<div class="row">
 					<div class="col flex-1">
 						<label for="inputFoto">Foto de Perfil</label>
-						<!-- <input type="file" name="foto" accept=".png, .jpg, .jpeg"> -->
+						<input type="file" name="foto"><%-- accept=".png, .jpg, .jpeg" --%>
 					</div>
 				</div>
 				<div class="row">

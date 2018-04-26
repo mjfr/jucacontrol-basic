@@ -1,5 +1,6 @@
 package br.senai.sp.info.pweb.jucacontrol.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -63,6 +64,19 @@ public class AppConfig implements WebMvcConfigurer{
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(getAutenticacaoInterceptor()).addPathPatterns("/**");
+	}
+	
+	
+	// Devido a adição das bibliotecas FilesUplaod e IO (commons)
+	/**
+	 * Configure o MultipartResolver (classe que gerencia o protocolo multipart)
+	 * @return
+	 */
+	@Bean
+	public MultipartResolver multipartResolver() {
+		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+		resolver.setMaxUploadSize(5 * 1024 * 1024);
+		return resolver;
 	}
 	
 }
